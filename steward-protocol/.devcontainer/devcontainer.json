@@ -1,0 +1,34 @@
+{
+  "name": "Steward Protocol - Agent City Playground",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "onCreateCommand": "apt-get update && apt-get install -y openssl",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "editor.formatOnSave": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
+      }
+    }
+  },
+  "postCreateCommand": "pip install pyyaml && pip install -e . && pip install -r herald/requirements.txt",
+  "remoteUser": "vscode",
+  "forwardPorts": [],
+  "portsAttributes": {},
+  "containerEnv": {
+    "PYTHONUNBUFFERED": "1"
+  }
+}

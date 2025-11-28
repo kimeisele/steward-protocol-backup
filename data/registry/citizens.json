@@ -1,0 +1,32 @@
+{
+  "agents": {
+    "herald": {
+      "name": "herald",
+      "broadcast_license": true,
+      "credits": 100,
+      "total_broadcasts": 0,
+      "violations": []
+    },
+    "civic": {
+      "name": "civic",
+      "broadcast_license": true,
+      "credits": 100,
+      "total_broadcasts": 0,
+      "violations": []
+    },
+    "forum": {
+      "name": "forum",
+      "broadcast_license": true,
+      "credits": 100,
+      "total_broadcasts": 0,
+      "violations": []
+    },
+    "science": {
+      "name": "science",
+      "broadcast_license": true,
+      "credits": 100,
+      "total_broadcasts": 0,
+      "violations": []
+    }
+  }
+}

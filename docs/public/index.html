@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VibeChat // GAD-3000 // PHOENIX</title>
+    <style>
+        body { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; padding: 2rem; max-width: 900px; margin: 0 auto; }
+        h1 { border-bottom: 2px solid #00ff41; padding-bottom: 15px; letter-spacing: 2px; }
+        #log { background: #000; border: 1px solid #333; height: 400px; overflow-y: scroll; padding: 15px; margin-bottom: 20px; white-space: pre-wrap; font-size: 0.9rem; }
+        #input-area { display: flex; border: 1px solid #00ff41; }
+        input { flex-grow: 1; background: #000; border: none; color: #fff; padding: 15px; outline: none; font-family: inherit; font-size: 1rem; }
+        button { background: #00ff41; color: #000; border: none; padding: 0 30px; cursor: pointer; font-weight: 900; font-size: 1rem; }
+        button:disabled { background: #333; color: #555; cursor: not-allowed; }
+
+        .system { color: #666; font-style: italic; }
+        .user { color: #0ff; font-weight: bold; margin-top: 10px; display: block; }
+        .agent { color: #f0f; margin-bottom: 10px; display: block; border-left: 2px solid #f0f; padding-left: 10px; }
+        .success { color: #00ff41; font-weight: bold; }
+        .error { color: #ff3333; font-weight: bold; background: rgba(50,0,0,0.5); padding: 2px; }
+    </style>
+</head>
+<body>
+    <h1>👁️ VIBE_CHAT // PHOENIX // GAD-3000</h1>
+    <div id="status">SYSTEM OFFLINE</div>
+    <div id="log"></div>
+    <div id="input-area">
+        <input type="text" id="cmd" placeholder="Initializing Encryption..." disabled>
+        <button id="btn" onclick="sendCommand()" disabled>LOCKED</button>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION (FRESH DATABASE NAME) ---
+        // Durch die Namensänderung erzwingen wir eine frische DB. Kein Konflikt mehr.
+        const DB_NAME = "VibeChat_Phoenix_Final_v1";
+        const STORE_NAME = "keys";
+
+        // --- 2. IDENTITY WALLET (CORE) ---
+        class IdentityWallet {
+            constructor() { this.keyPair = null; this.db = null; }
+
+            async init() {
+                // Environment Check
+                if (!window.crypto || !window.crypto.subtle) {
+                    throw new Error("INSECURE CONTEXT. Please use http://localhost:8000");
+                }
+
+                await this._openDB();
+                const existing = await this._getKey();
+
+                if (existing) {
+                    this.keyPair = existing;
+                    console.log("[WALLET] Identity restored.");
+                } else {
+                    console.log("[WALLET] Generating new identity...");
+                    this.keyPair = await this._genKeys();
+                    await this._saveKey(this.keyPair);
+                }
+                return await this._expKey(this.keyPair.publicKey);
+            }
+
+            async sign(msg) {
+                if (!this.keyPair) throw new Error("Wallet not ready");
+                const enc = new TextEncoder().encode(msg);
+                const sig = await window.crypto.subtle.sign(
+                    {name:"ECDSA", hash:"SHA-256"},
+                    this.keyPair.privateKey,
+                    enc
+                );
+
+                return {
+                    message: msg,
+                    signature: this._hex(sig),
+                    public_key: await this._expKey(this.keyPair.publicKey),
+                    agent_id: "HIL_OPERATOR",
+                    timestamp: Date.now()
+                };
+            }
+
+            // Crypto Primitives
+            async _genKeys() {
+                return window.crypto.subtle.generateKey(
+                    {name:"ECDSA", namedCurve:"P-256"},
+                    false, ["sign","verify"]
+                );
+            }
+            async _expKey(k) {
+                const buf = await window.crypto.subtle.exportKey("spki", k);
+                return this._hex(buf);
+            }
+            _hex(buf) {
+                return [...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
+            }
+
+            // IndexedDB (ROBUST)
+            _openDB() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(DB_NAME, 1);
+
+                    req.onupgradeneeded = (e) => {
+                        console.log("[DB] Creating new object store...");
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(STORE_NAME)) {
+                            db.createObjectStore(STORE_NAME);
+                        }
+                    };
+
+                    req.onsuccess = () => { this.db = req.result; resolve(); };
+                    req.onerror = (e) => reject(`DB Error: ${e.target.error}`);
+                });
+            }
+
+            _getKey() {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(STORE_NAME, "readonly");
+                    const req = tx.objectStore(STORE_NAME).get("hil_identity");
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject("Failed to read key");
+                });
+            }
+
+            _saveKey(val) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(STORE_NAME, "readwrite");
+                    const req = tx.objectStore(STORE_NAME).put(val, "hil_identity");
+                    tx.oncomplete = resolve;
+                    tx.onerror = () => reject("Failed to save key");
+                });
+            }
+        }
+
+        // --- 3. UI LOGIC ---
+        const log = document.getElementById('log');
+        const input = document.getElementById('cmd');
+        const btn = document.getElementById('btn');
+        const status = document.getElementById('status');
+        let wallet = null;
+
+        function append(txt, type) {
+            const t = new Date().toLocaleTimeString('de-DE');
+            log.innerHTML += `<div class="${type}">[${t}] ${txt}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // --- 4. BOOT SEQUENCE ---
+        (async () => {
+            append("SYSTEM INIT: Mounting Phoenix Protocol...", "system");
+            try {
+                wallet = new IdentityWallet();
+                const pk = await wallet.init();
+
+                input.disabled = false;
+                btn.disabled = false;
+                input.placeholder = "Enter command (e.g. 'status', 'briefing')...";
+                btn.innerText = "TRANSMIT";
+                input.focus();
+
+                status.innerHTML = `ONLINE | <span class="success">ENCRYPTED</span>`;
+                append(`✅ IDENTITY FUSED.\n🔑 ID: ${pk.substring(0,24)}...`, "success");
+            } catch(e) {
+                status.innerText = "CRITICAL FAILURE";
+                status.style.color = "red";
+                append(`❌ BOOT ERROR: ${e.message}`, "error");
+                console.error(e);
+            }
+        })();
+
+        // --- 5. TRANSMISSION ---
+        async function sendCommand() {
+            const txt = input.value.trim();
+            if(!txt) return;
+
+            append(`> ${txt}`, "user");
+            input.value = "";
+
+            try {
+                append("🔒 Signing payload...", "system");
+                const payload = await wallet.sign(txt);
+
+                const TARGET = "http://localhost:8000/v1/chat";
+
+                const res = await fetch(TARGET, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-api-key": "steward-secret-key"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (data.status === "success" || data.status === "SUBMITTED") {
+                    const out = data.summary || JSON.stringify(data, null, 2);
+                    append(out, "agent");
+                } else {
+                    append(`❌ REJECTED: ${JSON.stringify(data)}`, "error");
+                }
+            } catch(e) {
+                append(`❌ NETWORK ERROR: ${e.message}`, "error");
+            }
+        }
+
+        input.addEventListener("keypress", e=>{if(e.key==="Enter") sendCommand()});
+    </script>
+</body>
+</html>

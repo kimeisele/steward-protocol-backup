@@ -1,0 +1,895 @@
+# STEWARD Protocol - Graceful Degradation
+
+**Status:** ✅ STABLE
+**Last Updated:** 2025-11-21
+
+---
+
+## 🎯 VISION: Universal Compatibility
+
+**Problem:** Not all agents need (or can implement) the full STEWARD Protocol.
+
+**Solution:** **Graceful Degradation** - multiple compliance levels that work together.
+
+---
+
+## 📊 FOUR COMPLIANCE LEVELS
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Level 1: MINIMAL (Human-Readable Only)                      │
+│  - Root STEWARD.md (lean, for humans & AI operators)       │
+│  - No machine-readable format                               │
+│  - Better than nothing!                                     │
+│                                                             │
+│  Use Case: Small projects, hobbyist agents, MVP            │
+│  Effort: 30 minutes                                         │
+└─────────────────────────────────────────────────────────────┘
+                          ↓ UPGRADE
+┌─────────────────────────────────────────────────────────────┐
+│ Level 2: STANDARD (Hybrid) ← RECOMMENDED                   │
+│  - Root STEWARD.md (human-readable summary)                │
+│  - steward.json (machine-readable manifest)                │
+│  - Best of both worlds!                                     │
+│                                                             │
+│  Use Case: Production agents, serious projects             │
+│  Effort: 2-4 hours                                          │
+└─────────────────────────────────────────────────────────────┘
+                          ↓ UPGRADE
+┌─────────────────────────────────────────────────────────────┐
+│ Level 3: ADVANCED (Runtime Introspection)                   │
+│  - STEWARD.md + steward.json                                │
+│  - Live attestations (auto-refresh)                         │
+│  - Health check endpoints                                   │
+│  - Dynamic trust scores                                     │
+│                                                             │
+│  Use Case: High-trust operations, SLA requirements          │
+│  Effort: 1-2 days                                           │
+└─────────────────────────────────────────────────────────────┘
+                          ↓ UPGRADE
+┌─────────────────────────────────────────────────────────────┐
+│ Level 4: FULL PROTOCOL (CLI + Federation)                   │
+│  - All of above                                             │
+│  - steward CLI tools                                        │
+│  - Federated registry                                       │
+│  - Complete ecosystem                                       │
+│                                                             │
+│  Use Case: Agent ecosystems, marketplaces                   │
+│  Effort: 1-2 weeks                                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🎚️ LEVEL 1: MINIMAL
+
+### What You Need
+
+**Single file:** `STEWARD.md` in repository root
+
+**Minimum content:**
+- Agent name & version
+- What it does (1-2 sentences)
+- Core capabilities (3-5 bullet points)
+- How to use it (basic commands)
+- Who maintains it
+
+**Size:** ~50-100 lines
+
+### Example: STEWARD_MINIMAL.md
+
+```markdown
+# STEWARD.md
+
+## Agent Identity
+- **Name:** simple-code-generator
+- **Version:** 1.0.0
+- **Status:** ACTIVE
+
+## What I Do
+Generate Python code from natural language descriptions.
+
+## Core Capabilities
+- Generate functions from docstrings
+- Generate test cases from functions
+- Refactor code for readability
+
+## How to Use
+```bash
+python simple_code_gen.py "create a function that sorts a list"
+```
+
+## Maintained By
+GitHub: @username
+```
+
+### Pros
+- ✅ Zero setup (just markdown)
+- ✅ Human & AI readable
+- ✅ Works with any operator (Claude, GPT, etc.)
+
+### Cons
+- ❌ Not machine-parseable
+- ❌ No agent-to-agent delegation
+- ❌ No automatic discovery
+
+### When to Use
+- Hobby projects
+- Internal tools (not public agents)
+- MVP/prototype phase
+- Learning STEWARD Protocol
+
+---
+
+## 🎚️ LEVEL 2: STANDARD (Recommended)
+
+### What You Need
+
+**Two files:**
+1. `STEWARD.md` (human-readable summary)
+2. `steward.json` (machine-readable manifest)
+
+**STEWARD.md content:**
+- Agent identity card
+- Link to steward.json
+- Quick start guide
+- Trust score summary
+- Attestation status
+
+**steward.json content:**
+- Full agent manifest (per JSON Schema)
+- Capabilities declaration
+- Quality metrics
+- Interfaces & operations
+
+**Size:** ~200 lines (md) + JSON manifest
+
+### Example: STEWARD_STANDARD.md
+
+```markdown
+# STEWARD.md
+
+> **STEWARD Protocol v1.0.0 Compliant (Level 2: Standard)**
+> Machine-readable manifest: [steward.json](./steward.json)
+
+## 🆔 Agent Identity
+- **ID:** code-generator-pro-1.0
+- **Name:** CodeGenPro
+- **Class:** Code Generator
+- **Version:** 1.0.0
+- **Status:** 🟢 ACTIVE
+- **Trust Score:** 0.89 ⭐⭐⭐⭐ (Trusted)
+
+## 🎯 What I Do
+Professional-grade code generation with test coverage, documentation, and quality guarantees.
+
+## ✅ Core Capabilities
+- `generate_function` - Generate Python functions from specs
+- `generate_tests` - Generate pytest test suites
+- `refactor_code` - Refactor for readability & performance
+- `generate_docs` - Generate docstrings & README
+
+## 📊 Quality Guarantees
+- **Test Coverage:** 92% (target: >90%)
+- **Uptime:** 98.5% (last 30 days)
+- **Success Rate:** 96% (1847/1923 delegations)
+- **Latency P99:** 3.2s (target: <5s)
+
+## 🔐 Verification
+```bash
+# Verify identity
+steward verify code-generator-pro
+
+# Check attestations
+steward attestation-status code-generator-pro
+```
+
+## 🚀 Quick Start
+
+### Discover & Delegate
+```bash
+# Discover this agent
+steward discover --capability generate_function
+
+# Delegate task
+steward delegate code-generator-pro \
+  --operation generate_function \
+  --context '{"spec": "sort list of integers", "include_tests": true}'
+```
+
+### Direct Usage (Non-Protocol)
+```bash
+python codegen_pro.py "create a function that sorts a list"
+```
+
+## 📋 Attestations
+- **Last Attested:** 2 hours ago (2025-11-21T11:00:00Z)
+- **Expires:** 22 hours (2025-11-22T11:00:00Z)
+- **Status:** ✅ VALID
+
+## 🤝 For Other Agents
+```python
+# Agent-to-agent delegation (Python example)
+from steward import delegate
+
+result = delegate(
+    agent_id="code-generator-pro",
+    operation="generate_function",
+    context={"spec": "...", "include_tests": True}
+)
+```
+
+## 👤 Maintained By
+- **Organization:** CodeGen Labs
+- **Contact:** https://github.com/codegenl abs/codegen-pro
+- **Support:** support@codegenlabs.com
+
+## 📚 More Info
+- **Full Manifest:** [steward.json](./steward.json)
+- **Trust Report:** [View Trust Score Breakdown](https://steward-registry.org/agents/code-generator-pro/trust-report)
+- **Protocol Docs:** [STEWARD Protocol](https://github.com/kimeisele/vibe-agency/tree/main/docs/protocols/steward)
+
+---
+
+**STEWARD Protocol Compliance:** Level 2 (Standard) ✅
+**Protocol Version:** 1.0.0
+**Last Updated:** 2025-11-21
+```
+
+### Pros
+- ✅ Human & machine-readable
+- ✅ Agent-to-agent delegation works
+- ✅ Discoverable in registry
+- ✅ Cryptographically verifiable
+
+### Cons
+- ⚠️ Attestations may become stale (manual refresh)
+- ⚠️ No real-time introspection
+
+### When to Use
+- **Production agents** (recommended)
+- Public agents in marketplace
+- Agents with SLA requirements
+- Commercial services
+
+---
+
+## 🎚️ LEVEL 3: ADVANCED
+
+### What You Need
+
+**All of Level 2, plus:**
+- Attestation auto-refresh (CI/CD)
+- Health check endpoints
+- Runtime introspection API
+- Trust score monitoring
+
+**Infrastructure:**
+- GitHub Actions (or similar CI/CD)
+- Monitoring service (optional)
+- Health check endpoint (HTTP)
+
+**Effort:** ~1-2 days setup
+
+### Additional Features
+
+#### 1. Auto-Refresh Attestations (CI/CD)
+```yaml
+# .github/workflows/steward-attest.yml
+name: STEWARD Attestation Refresh
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: uv run pytest tests/ -v
+      - run: steward attest --all-capabilities
+      - run: git commit -m "Update attestations"
+      - run: git push
+```
+
+#### 2. Health Check Endpoint
+```python
+# health_check.py
+from flask import Flask, jsonify
+app = Flask(__name__)
+
+@app.route('/health')
+def health():
+    return jsonify({
+        "status": "healthy",
+        "version": "1.0.0",
+        "uptime_seconds": get_uptime(),
+        "last_test_run": "2025-11-21T11:00:00Z",
+        "test_pass_rate": 0.92
+    })
+
+@app.route('/introspect')
+def introspect():
+    return jsonify({
+        "agent_id": "code-generator-pro",
+        "active_tasks": 3,
+        "queued_tasks": 7,
+        "success_rate_24h": 0.96,
+        "latency_p99_ms": 3200
+    })
+```
+
+#### 3. Trust Score Monitoring
+```bash
+# Monitor trust score
+steward trust-score code-generator-pro --watch
+
+# Alert if trust drops below threshold
+steward alert trust-score code-generator-pro \
+  --threshold 0.85 \
+  --notify slack://webhook-url
+```
+
+### Pros
+- ✅ Always up-to-date attestations
+- ✅ Real-time health status
+- ✅ Proactive trust monitoring
+
+### Cons
+- ⚠️ Requires CI/CD setup
+- ⚠️ More infrastructure overhead
+
+### When to Use
+- High-trust operations (financial, healthcare)
+- SLA-bound services (99.9% uptime guarantee)
+- Enterprise agents
+- Critical infrastructure agents
+
+---
+
+## 🎚️ LEVEL 4: FULL PROTOCOL
+
+### What You Need
+
+**All of Level 3, plus:**
+- `steward` CLI installed
+- Published to federated registry
+- Full cryptographic signing
+- Multi-sig support (optional)
+
+**Infrastructure:**
+- Registry participation (push attestations)
+- Monitoring dashboard
+- Key management (KMS)
+- Backup & disaster recovery
+
+**Effort:** ~1-2 weeks setup
+
+### Additional Features
+
+#### 1. CLI Operations
+```bash
+# Initialize agent
+steward init
+
+# Generate keys
+steward keygen
+
+# Sign manifest
+steward sign steward.json
+
+# Publish to registry
+steward publish
+
+# Monitor delegations
+steward monitor --live
+```
+
+#### 2. Federated Registry
+```bash
+# Publish to multiple registries
+steward publish \
+  --registry https://steward-registry.org \
+  --registry https://backup-registry.example.com
+
+# Cross-registry discovery
+steward discover --capability generate_code --federated
+```
+
+#### 3. Advanced Security
+```bash
+# Multi-sig signing (requires 2 of 3 keys)
+steward sign steward.json \
+  --multi-sig \
+  --signers "team-member-1,team-member-2,team-member-3" \
+  --threshold 2
+
+# Key rotation
+steward rotate-key --grace-period 30d
+```
+
+### Pros
+- ✅ Complete protocol compliance
+- ✅ Maximum trust & discoverability
+- ✅ Enterprise-grade security
+- ✅ Full ecosystem participation
+
+### Cons
+- ⚠️ Significant infrastructure investment
+- ⚠️ Ongoing maintenance overhead
+
+### When to Use
+- Agent marketplaces
+- Multi-tenant platforms
+- Ecosystem builders
+- Protocol contributors
+
+---
+
+## 🔄 MIGRATION PATH
+
+### From Nothing → Level 1 (30 min)
+```bash
+# Create basic STEWARD.md
+cp docs/protocols/steward/templates/STEWARD_TEMPLATE.md STEWARD.md
+# Fill in agent details
+vim STEWARD.md
+# Commit
+git add STEWARD.md && git commit -m "Add STEWARD.md (Level 1)"
+```
+
+### From Level 1 → Level 2 (2-4 hours)
+```bash
+# Create steward.json
+steward init  # Interactive manifest builder
+
+# Add to STEWARD.md
+echo "Machine-readable manifest: [steward.json](./steward.json)" >> STEWARD.md
+
+# Sign manifest
+steward keygen
+steward sign steward.json
+
+# Commit
+git add steward.json steward.json.sig STEWARD.md
+git commit -m "Upgrade to Level 2 (Standard)"
+```
+
+### From Level 2 → Level 3 (1-2 days)
+```bash
+# Setup CI/CD attestation refresh
+cp docs/protocols/steward/examples/github-actions-attest.yml .github/workflows/
+
+# Add health check endpoint
+cp docs/protocols/steward/examples/health_check.py ./
+
+# Deploy health check
+python health_check.py &
+
+# Update steward.json with endpoints
+vim steward.json  # Add health_check, introspection endpoints
+
+# Commit
+git add .github/workflows/ health_check.py steward.json
+git commit -m "Upgrade to Level 3 (Advanced)"
+```
+
+### From Level 3 → Level 4 (1-2 weeks)
+```bash
+# Install steward CLI
+pip install steward-cli
+
+# Publish to registry
+steward publish --registry https://steward-registry.org
+
+# Setup monitoring
+steward monitor --dashboard https://monitor.example.com
+
+# Enable federation
+steward federate \
+  --primary-registry steward-registry.org \
+  --backup-registry backup-registry.example.com
+
+# Commit
+git add steward_config.yml
+git commit -m "Upgrade to Level 4 (Full Protocol)"
+```
+
+---
+
+## 📊 COMPARISON MATRIX
+
+| Feature | Level 1 | Level 2 | Level 3 | Level 4 |
+|---------|---------|---------|---------|---------|
+| **Human-readable** | ✅ | ✅ | ✅ | ✅ |
+| **Machine-readable** | ❌ | ✅ | ✅ | ✅ |
+| **Agent-to-Agent delegation** | ❌ | ✅ | ✅ | ✅ |
+| **Registry discovery** | ❌ | ✅ | ✅ | ✅ |
+| **Cryptographic signing** | ❌ | ✅ | ✅ | ✅ |
+| **Attestation auto-refresh** | ❌ | ❌ | ✅ | ✅ |
+| **Health checks** | ❌ | ❌ | ✅ | ✅ |
+| **Runtime introspection** | ❌ | ❌ | ✅ | ✅ |
+| **CLI tools** | ❌ | ❌ | ❌ | ✅ |
+| **Federated registry** | ❌ | ❌ | ❌ | ✅ |
+| **Multi-sig support** | ❌ | ❌ | ❌ | ✅ |
+| **Setup time** | 30min | 2-4h | 1-2d | 1-2w |
+| **Maintenance** | None | Low | Medium | High |
+
+---
+
+## 🎯 RECOMMENDATION
+
+### Choose Level Based On:
+
+**Level 1 (Minimal):**
+- ✅ Hobby project
+- ✅ Internal tool
+- ✅ Learning protocol
+- ✅ MVP phase
+
+**Level 2 (Standard) ← RECOMMENDED:**
+- ✅ Production agent
+- ✅ Public marketplace
+- ✅ Serious project
+- ✅ SLA commitments
+
+**Level 3 (Advanced):**
+- ✅ High-trust operations
+- ✅ Enterprise services
+- ✅ 99.9% uptime SLA
+- ✅ Real-time monitoring
+
+**Level 4 (Full Protocol):**
+- ✅ Agent marketplace
+- ✅ Ecosystem platform
+- ✅ Protocol contributor
+- ✅ Maximum trust required
+
+---
+
+## ✅ VALIDATION
+
+### How to Check Your Level
+
+```bash
+$ steward level STEWARD.md
+
+Analyzing STEWARD compliance...
+
+Level 1 (Minimal): ✅ PASS
+  ✅ STEWARD.md exists
+  ✅ Has agent identity
+  ✅ Has capabilities list
+
+Level 2 (Standard): ✅ PASS
+  ✅ steward.json exists
+  ✅ Manifest valid
+  ✅ Cryptographically signed
+
+Level 3 (Advanced): ❌ FAIL
+  ❌ No health check endpoint
+  ❌ Attestations not auto-refreshing
+
+Level 4 (Full Protocol): ❌ NOT CHECKED
+
+Overall: Level 2 (Standard) ✅
+Recommendation: Upgrade to Level 3 for better trust
+```
+
+---
+
+## 📚 EXAMPLES
+
+See `docs/protocols/steward/examples/` for:
+- `minimal/` - Level 1 examples
+- `standard/` - Level 2 examples (vibe-agency)
+- `advanced/` - Level 3 examples
+- `full/` - Level 4 examples
+
+---
+
+---
+
+## 🛡️ FAILURE MODES & RECOVERY (v0.1.0+ with Cryptography)
+
+**Philosophy:** The STEWARD Protocol is built for **Hostile Environments**. If security layers fail, the system MUST NOT crash—it MUST degrade gracefully while logging loudly.
+
+### Scenario A: Identity File Not Found (`STEWARD.md`)
+
+**Trigger:** Agent starts, but `steward/keys/identity.md` doesn't exist
+
+**Code Behavior:**
+```python
+# From steward/client.py
+if not self.identity_path.exists():
+    print(f"⚠️ Identity not found. Running in anonymous mode.")
+    self.authenticated = False
+    return
+```
+
+**Impact:**
+- ✅ Agent starts normally
+- ✅ Agent executes tasks
+- ❌ Outputs are flagged as `UNSIGNED_ANONYMOUS_ARTIFACT`
+- ❌ CI/CD pipelines will **REJECT** unsigned artifacts
+
+**Recovery:**
+```bash
+steward keygen              # Generate new identity + keys
+steward verify              # Confirm keys are valid
+git add steward/keys        # Commit public key (safe to commit)
+# NEVER commit steward/keys/steward_private_key (blocked by hook)
+```
+
+**Vibe Agency Impact:** "Graceful mode" — availability preserved, trust degraded. The OS sees the artifact but marks it untrusted.
+
+---
+
+### Scenario B: Corrupted or Missing Private Key
+
+**Trigger:** `steward/keys/steward_private_key` exists but is corrupted or unreadable
+
+**Code Behavior:**
+```python
+# From steward/client.py - signing operation
+try:
+    signature = private_key.sign(artifact_bytes, ec.ECDSA(hashes.SHA256()))
+except Exception as e:
+    print(f"⚠️ Signing failed: {e}")
+    return "SIGNING_ERROR_KEY_CORRUPTED"  # Explicit error flag
+```
+
+**Impact:**
+- ✅ Agent keeps running (no crash)
+- ✅ Task completes
+- ❌ Artifact is saved with signature `SIGNING_ERROR_KEY_CORRUPTED`
+- ❌ Downstream CI/CD rejects it (safety barrier)
+
+**Recovery:**
+```bash
+# Option 1: Restore from backup
+cp steward/keys/steward_private_key.backup steward/keys/steward_private_key
+
+# Option 2: Regenerate (old signatures become invalid)
+steward keygen --force
+steward re-sign previous_artifacts/  # Optional: re-sign old work
+```
+
+**Vibe Agency Impact:** "Degradation with visibility" — the error is explicit in the artifact metadata. The OS can log this and alert the operator.
+
+---
+
+### Scenario C: Invalid Signature (Tampering Detected)
+
+**Trigger:** An artifact is modified after signing, or verification fails
+
+**Code Behavior:**
+```python
+# From steward/verify.py
+try:
+    public_key.verify(signature, artifact_bytes, ec.ECDSA(hashes.SHA256()))
+    return True  # ✅ Valid
+except InvalidSignature:
+    print("❌ TAMPERING DETECTED: Signature is invalid!")
+    return False  # ❌ Rejected
+```
+
+**Impact:**
+- **Local Context:** Warning displayed to the developer
+- **CI/CD Context:** Pipeline exits with code 1 (merge blocked)
+- **Runtime Context:** Receiving agent logs warning but keeps connection open (doesn't crash)
+
+**Recovery:**
+```bash
+# Check what changed
+steward verify --verbose artifact.sig
+
+# If you made a mistake, re-sign
+steward sign artifact
+
+# If tampering is real, investigate
+git log -p artifact  # See who changed it when
+```
+
+**Vibe Agency Impact:** "Security barrier activated" — tampered artifacts are rejected before they propagate. The ecosystem is protected.
+
+---
+
+### Scenario D: Missing Verification Hook (Pre-commit)
+
+**Trigger:** Developer commits private key accidentally (hook disabled or missing)
+
+**Code Behavior:**
+```bash
+# From setup_safety.sh - pre-commit hook
+if grep -q "BEGIN EC PRIVATE KEY" "$file"; then
+    echo "❌ REJECTED: Private key detected in $file"
+    exit 1  # Commit aborted
+fi
+```
+
+**Impact:**
+- ✅ Commit is **BLOCKED** at terminal level
+- ✅ Private key never reaches git history
+- ✅ Developer is forced to run `steward keygen` and restart
+
+**Recovery:**
+```bash
+# Run safety setup again
+bash setup_safety.sh
+
+# Or manually install hook
+cp steward/hooks/pre-commit .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+**Vibe Agency Impact:** "First line of defense" — prevents the root cause of key leakage before it happens.
+
+---
+
+### Scenario E: Key Rotation During Active Signing
+
+**Trigger:** Old key is being used while new key is being installed
+
+**Code Behavior:**
+```python
+# The protocol supports key versioning
+artifact = {
+    "data": "...",
+    "signature": "...",
+    "key_version": 2,  # Which key was used?
+    "signed_at": "2025-11-22T10:30:00Z"
+}
+
+# Verification checks key_version
+if artifact["key_version"] != current_key_version:
+    # Trusted if signature still validates with old key
+    if verify_with_historical_key(signature, data, artifact["key_version"]):
+        return True  # ✅ Trusted (old but valid)
+    else:
+        return False  # ❌ Rejected
+```
+
+**Impact:**
+- ✅ Old signatures remain valid (backward compatible)
+- ✅ New signatures use new key immediately
+- ✅ Grace period: old keys can be retained for 30 days (configurable)
+
+**Recovery:**
+```bash
+# Rotate key (grace period: 30 days)
+steward rotate-key --grace-period 30d
+
+# After grace period, old key can be archived
+steward archive-key --key-version 1
+```
+
+**Vibe Agency Impact:** "Zero-downtime rotation" — key rotation happens without breaking existing validations.
+
+---
+
+### Scenario F: Vibe Agency Missing STEWARD Library
+
+**Trigger:** `from steward import StewardClient` fails (library not installed)
+
+**Code Behavior (Vibe OS):**
+```python
+# From vibe-agency startup
+try:
+    from steward import StewardClient
+    crypto_available = True
+except ImportError:
+    print("⚠️ WARNING: STEWARD Library not found. Running in LAWLESS mode (Zero Trust)")
+    crypto_available = False
+    # Continue anyway
+```
+
+**Impact:**
+- ✅ Vibe OS boots normally
+- ✅ Agents run without cryptographic identity (anonymous)
+- ❌ All artifacts are unsigned
+- ❌ CI/CD will reject them (safety barrier)
+
+**Recovery:**
+```bash
+# Install from PyPI (or local)
+pip install steward-protocol
+
+# Or locally
+cd /path/to/steward-protocol
+pip install -e .
+
+# Verify
+python -c "from steward import StewardClient; print('✅ STEWARD available')"
+```
+
+**Vibe Agency Impact:** "Graceful degradation with alerting" — the OS detects the issue and logs it. It doesn't crash. Agents can still run (but untrusted).
+
+---
+
+## 📊 Failure Mode Matrix
+
+| Scenario | Crash? | Availability | Trust Level | Recovery Time |
+|----------|--------|--------------|-------------|----------------|
+| A. No Identity | ❌ No | ✅ 100% | 🔴 Anonymous | ~1 min |
+| B. Corrupted Key | ❌ No | ✅ 100% | 🟡 Unsigned | ~5 min |
+| C. Tampering Detected | ❌ No | ✅ 100% | 🔴 Rejected | ~10 min (investigate) |
+| D. Key in Commit | ❌ No (blocked) | ✅ 100% | ✅ Prevented | ~2 min |
+| E. Key Rotation | ❌ No | ✅ 100% | 🟡 Mixed (grace period) | ~30 days |
+| F. STEWARD Missing | ❌ No | ✅ 100% | 🔴 Anonymous | ~5 min (install) |
+
+**Verdict:** ✅ **Zero crashes.** The system is "Fail-Safe" (degrades, doesn't explode).
+
+---
+
+## 🔗 Vibe Agency Integration (Phoenix Pattern)
+
+### Architecture: "Steward is Law, Vibe is State"
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ VIBE AGENCY (OS Layer)                                      │
+│  - Key Management (where are private keys stored?)          │
+│  - Policy Enforcement (what can agents do?)                 │
+│  - Audit Logging (who did what?)                            │
+└─────────────────────────────────────────────────────────────┘
+                        ↓ uses
+┌─────────────────────────────────────────────────────────────┐
+│ STEWARD PROTOCOL (Cryptography Library)                     │
+│  - Key Generation (keygen)                                  │
+│  - Signing (sign)                                           │
+│  - Verification (verify)                                    │
+│  - Graceful Degradation (what if key is missing?)           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Separation of Concerns
+
+| Component | Responsibility | Location |
+|-----------|-----------------|----------|
+| **STEWARD** | *What* is cryptographically true | `steward/crypto.py` |
+| **Vibe OS** | *Where* keys are stored, *Who* can use them | `vibe-agency/config.yml` |
+| **CI/CD** | *When* to accept/reject artifacts | `.github/workflows/` |
+
+### How Integration Works
+
+```python
+# 1. Vibe OS boots and loads STEWARD
+from steward import StewardClient
+
+client = StewardClient(
+    identity_path="steward/keys/identity.md",
+    private_key_path="$VIBE_SECRETS/steward_private_key"  # Configured by OS
+)
+
+# 2. Agent asks to sign an artifact
+artifact = {"data": "important work"}
+signature = client.sign(artifact)
+
+# 3. Vibe OS delivers the artifact downstream
+# 4. CI/CD verifies using steward.verify()
+# 5. Trust decision is made (accept/reject)
+
+# If client is missing (ImportError):
+# Vibe OS gracefully degrades: "Anonymous mode"
+# Artifacts are unsigned (CI/CD rejects them—safety barrier)
+```
+
+### Key Management Policy
+
+**Vibe OS is responsible for:**
+- Storing private keys in `$VIBE_SECRETS` (not git)
+- Setting permissions: `chmod 600 steward_private_key`
+- Rotating keys on schedule (steward supports this)
+- Backing up keys (and testing recovery)
+
+**Steward Protocol guarantees:**
+- Will never write the private key to logs
+- Will never commit private key to git (blocked by hook)
+- Will use industry-standard NIST P-256 (SECP256R1)
+- Will fail gracefully if key is missing
+
+---
+
+**Status:** ✅ STABLE - Graceful degradation model complete
+**Next:** Create templates for each level + vibe-agency reference implementation

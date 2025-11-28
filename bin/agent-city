@@ -1,0 +1,191 @@
+#!/usr/bin/env python3
+"""Agent City CLI - Unified interface for Agent City OS (Phase 1)"""
+
+import argparse
+import sys
+from pathlib import Path
+
+# Add project root to path
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from vibe_core.task_management import TaskManager
+from vibe_core.boot_orchestrator import quick_boot
+
+
+def cmd_task_add(args):
+    """Add a task."""
+    tm = TaskManager(PROJECT_ROOT)
+
+    # Resolve roadmap: accept UUID directly or match current roadmap name
+    roadmap_id = None
+    if hasattr(args, 'roadmap') and args.roadmap:
+        # Check if it's already a UUID (36 chars with dashes)
+        if len(args.roadmap) == 36 and args.roadmap.count('-') == 4:
+            roadmap_id = args.roadmap
+        # Otherwise try to match current roadmap name
+        elif tm.roadmap and args.roadmap == tm.roadmap.name:
+            roadmap_id = tm.roadmap.id
+
+    task = tm.add_task(
+        title=args.description,
+        priority=args.priority,
+        roadmap_id=roadmap_id
+    )
+    print(f"✅ Task added: {args.description}")
+    print(f"   ID: {task.id}")
+    if task.roadmap_id:
+        print(f"   Roadmap: {tm.roadmap.name if tm.roadmap else task.roadmap_id}")
+    return 0
+
+
+def cmd_task_list(args):
+    """List tasks."""
+    tm = TaskManager(PROJECT_ROOT)
+    mission = tm.get_active_mission()
+    tasks = tm.list_tasks()
+
+    if mission and mission.current_task:
+        print(f"📋 Current task: {mission.current_task}")
+    elif tasks:
+        next_task = tm.get_next_task()
+        if next_task:
+            print(f"📋 Next task: {next_task.title}")
+
+    if tasks:
+        print(f"\n📊 Tasks ({len(tasks)}):")
+        for task in tasks[:10]:  # Show top 10
+            status_icon = {
+                "PENDING": "⏳",
+                "IN_PROGRESS": "▶️",
+                "COMPLETED": "✅",
+                "BLOCKED": "🚫",
+            }.get(task.status.value, "❓")
+            print(f"  {status_icon} P{task.priority}: {task.title}")
+    else:
+        print("📭 No tasks yet. Add one with: agent-city task add \"your task\"")
+
+    return 0
+
+
+def cmd_status(args):
+    """Show system status."""
+    try:
+        # Use unified boot orchestrator (discovers all 23 agents)
+        kernel = quick_boot()
+        status = kernel.get_status()
+
+        print("✅ Agent City Status:")
+        print(f"   Agents registered: {status.get('agents_registered', 0)}")
+        print(f"   Manifests: {status.get('manifests', 0)}")
+        print(f"   Ledger events: {status.get('ledger_events', 0)}")
+
+        return 0
+    except Exception as e:
+        print(f"❌ Error getting status: {e}")
+        return 1
+
+
+def cmd_mission(args):
+    """Execute a mission."""
+    print(f"🚀 Mission mode: {args.description}")
+    print("   (Mission execution coming in Phase 2)")
+    return 0
+
+
+def cmd_roadmap_create(args):
+    """Create a new roadmap."""
+    tm = TaskManager(PROJECT_ROOT)
+    roadmap = tm.create_roadmap(
+        name=args.name,
+        description=args.description,
+        missions=[]
+    )
+    print(f"✅ Roadmap created: {roadmap.name}")
+    print(f"   ID: {roadmap.id}")
+    return 0
+
+
+def cmd_roadmap_show(args):
+    """Show current roadmap."""
+    tm = TaskManager(PROJECT_ROOT)
+    if not tm.roadmap:
+        print("❌ No active roadmap")
+        return 1
+
+    print(f"📋 Roadmap: {tm.roadmap.name}")
+    print(f"   Description: {tm.roadmap.description}")
+    missions = tm.roadmap.missions or []
+    print(f"   Missions: {len(missions)}")
+    if missions:
+        for i, mission in enumerate(missions, 1):
+            print(f"   {i}. {mission}")
+    return 0
+
+
+def main():
+    """Main entry point."""
+    parser = argparse.ArgumentParser(
+        prog="agent-city",
+        description="Agent City CLI - Control the multi-agent system"
+    )
+
+    # Global options
+    parser.add_argument(
+        "--mission",
+        dest="mission_desc",
+        help="Run in mission mode with description"
+    )
+
+    subparsers = parser.add_subparsers(dest="command")
+
+    # task subcommand
+    task_parser = subparsers.add_parser("task")
+    task_subparsers = task_parser.add_subparsers(dest="task_command")
+
+    # task add
+    task_add = task_subparsers.add_parser("add")
+    task_add.add_argument("description")
+    task_add.add_argument("-p", "--priority", type=int, default=0, help="Task priority (0-100)")
+    task_add.add_argument("-r", "--roadmap", help="Roadmap name or ID to link task to")
+    task_add.set_defaults(func=cmd_task_add)
+
+    # task list
+    task_list = task_subparsers.add_parser("list")
+    task_list.set_defaults(func=cmd_task_list)
+
+    # status subcommand
+    status_parser = subparsers.add_parser("status")
+    status_parser.set_defaults(func=cmd_status)
+
+    # roadmap subcommand
+    roadmap_parser = subparsers.add_parser("roadmap")
+    roadmap_subparsers = roadmap_parser.add_subparsers(dest="roadmap_command")
+
+    # roadmap create
+    roadmap_create = roadmap_subparsers.add_parser("create")
+    roadmap_create.add_argument("name")
+    roadmap_create.add_argument("description")
+    roadmap_create.set_defaults(func=cmd_roadmap_create)
+
+    # roadmap show
+    roadmap_show = roadmap_subparsers.add_parser("show")
+    roadmap_show.set_defaults(func=cmd_roadmap_show)
+
+    # Parse arguments
+    args = parser.parse_args()
+
+    # Handle mission mode
+    if args.mission_desc:
+        return cmd_mission(type('Args', (), {'description': args.mission_desc})())
+
+    # Handle subcommands
+    if hasattr(args, 'func'):
+        return args.func(args)
+    else:
+        parser.print_help()
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

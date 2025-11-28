@@ -1,0 +1,44 @@
+package:
+  name: "agent-city-core"
+  version: "1.0.0"
+  description: "The Governance & Operations Core for VibeOS"
+  license: "MIT"
+  author: "Vibe Inc."
+
+cartridges:
+  # --- SYSTEM AGENTS (The Immune System) ---
+  - name: "auditor"
+    path: "./steward/system_agents/auditor"
+    class: "AuditorCartridge"
+    domain: "GOVERNANCE"
+    capabilities: ["audit", "validation"]
+
+  - name: "archivist"
+    path: "./steward/system_agents/archivist"
+    class: "ArchivistCartridge"
+    domain: "INFRASTRUCTURE"
+    capabilities: ["archive", "history", "records"]
+
+  - name: "scribe"
+    path: "./steward/system_agents/scribe"
+    class: "ScribeCartridge"
+    domain: "INFRASTRUCTURE"
+    capabilities: ["documentation", "introspection", "publishing"]
+
+  # --- CORE PROTOCOL ---
+  - name: "civic"
+    path: "./civic"
+    class: "CivicCartridge"
+    domain: "INFRASTRUCTURE"
+    capabilities: ["ledger", "registry", "licenses"]
+
+
+  # --- CITIZENS (Agent City) ---
+  - name: "echo"
+    path: "./agent_city/registry/citizens/echo"
+    class: "EchoCartridge"
+    domain: "GOVERNANCE"
+    capabilities: ["proposal", "transparency"]
+
+dependencies:
+  - "vibe-agency >= 2.0.0"
